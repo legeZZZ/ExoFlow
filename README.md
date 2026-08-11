@@ -94,7 +94,6 @@ ExoFlow/
 │   └── ...
 ├── tests/                     ← 72 unit tests
 ├── samples/                   ← input/output contracts
-├── web/                       ← web dashboard
 ```
 
 ## Documentation
