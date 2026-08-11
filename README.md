@@ -95,14 +95,12 @@ ExoFlow/
 ├── tests/                     ← 72 unit tests
 ├── samples/                   ← input/output contracts
 ├── web/                       ← web dashboard
-└── docs/                      ← detailed documentation
 ```
 
 ## Documentation
 
 - [Executable Contract](EXECUTABLE_CONTRACT.md) — implementation claims and evidence minimum
-- [Track 2 Dataset Research](docs/track2-dataset-research.md)
-- [Track 2 Real Data](docs/track2-real-data.md)
+- [Executable Contract](EXECUTABLE_CONTRACT.md) — implementation claims and evidence minimum
 
 ## Requirements
 
