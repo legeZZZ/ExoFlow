@@ -1,5 +1,7 @@
 # ExoFlow
 
+[中文](README.zh-CN.md)
+
 **Multi-agent software engineering orchestration with a deterministic state machine core.**
 
 ExoFlow coordinates specialist AI agents through a typed, CAS-guarded state machine to
