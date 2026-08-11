@@ -103,7 +103,6 @@ ExoFlow/
 - [Executable Contract](EXECUTABLE_CONTRACT.md) — implementation claims and evidence minimum
 - [Track 2 Dataset Research](docs/track2-dataset-research.md)
 - [Track 2 Real Data](docs/track2-real-data.md)
-- [完整方案文档](docs/赛道一-CodeOps-Control-Tower-完整方案.md) (Chinese)
 
 ## Requirements
 
