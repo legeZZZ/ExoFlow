@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","calibrated_result","evidence_gaps"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"calibrated_result":{"enum":["pass","fail","uncertain"]},"evidence_gaps":{"type":"array"},"disagreement_refs":{"type":"array"}}}

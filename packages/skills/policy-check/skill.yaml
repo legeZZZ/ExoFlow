@@ -1,0 +1,8 @@
+name: policy-check
+version: 0.1.0
+category: governance
+implementation: deterministic-policy
+input_artifact: ProposedAction
+output_artifact: PolicyReport
+side_effects: none
+approval: none

@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"independent-pass","assert":["runner differs from executor","public and hidden results are recorded"]},{"id":"verifier-unavailable","assert":["return uncertain or needs_human","never accept executor self-report"]}]}

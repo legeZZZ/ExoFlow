@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "workers": [
+    {"name": "codeops-lead", "source": "team-leader", "skill": "codeops-orchestration", "capabilities": ["issue-fusion", "repo-map", "root-cause-probe", "runbook-rag", "incident-memory", "skill-distiller", "risk-guard", "policy-check", "judge-calibrator", "safe-patch-exec", "verify-and-replay", "resume-guard"], "runtime": "openclaw"},
+    {"name": "codeops-intake", "source": "intake", "skill": "issue-intake-role", "capabilities": ["issue-fusion"], "runtime": "openclaw"},
+    {"name": "codeops-triage", "source": "triage", "skill": "risk-triage", "capabilities": ["risk-guard", "policy-check"], "runtime": "openclaw"},
+    {"name": "codeops-env-bootstrap", "source": "env-bootstrap", "skill": "environment-bootstrap", "capabilities": ["repo-map", "runbook-rag"], "runtime": "openclaw"},
+    {"name": "codeops-repo-analyst", "source": "repo-analyst", "skill": "repository-analysis", "capabilities": ["repo-map", "root-cause-probe", "runbook-rag", "incident-memory"], "runtime": "openclaw"},
+    {"name": "codeops-plan", "source": "plan", "skill": "bounded-change-planning", "capabilities": ["root-cause-probe", "risk-guard", "policy-check"], "runtime": "openclaw"},
+    {"name": "codeops-executor", "source": "executor", "skill": "approved-patch-execution", "capabilities": ["risk-guard", "policy-check", "safe-patch-exec", "resume-guard"], "runtime": "hermes"},
+    {"name": "codeops-verifier", "source": "verifier", "skill": "independent-verification", "capabilities": ["policy-check", "judge-calibrator", "verify-and-replay"], "runtime": "openclaw"},
+    {"name": "codeops-postmortem", "source": "postmortem", "skill": "postmortem-skill-distillation", "capabilities": ["incident-memory", "skill-distiller", "judge-calibrator"], "runtime": "openclaw"}
+  ]
+}

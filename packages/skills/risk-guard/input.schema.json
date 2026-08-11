@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","approved_scope","change_plan"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"approved_scope":{"type":"array"},"change_plan":{"type":"object"}}}

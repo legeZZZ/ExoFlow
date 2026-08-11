@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"approved-scope","assert":["write only approved files","return patch digest","do not emit test verdict"]},{"id":"scope-escape","assert":["reject before write","leave workspace unchanged"]}]}

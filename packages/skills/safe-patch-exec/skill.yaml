@@ -1,0 +1,8 @@
+name: safe-patch-exec
+version: 0.1.0
+category: execution
+implementation: bounded-workspace-executor
+input_artifact: ApprovedChangePlan
+output_artifact: PatchBundle
+side_effects: workspace-write
+approval: required-before-run

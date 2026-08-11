@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"duplicate-reports","assert":["same symptom cluster preserves all source ids","no repository mutation"]},{"id":"conflicting-symptoms","assert":["retain competing clusters","emit uncertainty"]}]}

@@ -1,0 +1,8 @@
+name: resume-guard
+version: 0.1.0
+category: execution
+implementation: checkpoint-and-fencing
+input_artifact: RecoveryRequest
+output_artifact: ResumeDecision
+side_effects: checkpoint-write
+approval: policy-dependent

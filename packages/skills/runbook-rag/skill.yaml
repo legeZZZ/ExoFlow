@@ -1,0 +1,8 @@
+name: runbook-rag
+version: 0.1.0
+category: knowledge
+implementation: hybrid-retrieval
+input_artifact: RootCauseHypotheses
+output_artifact: RunbookMatches
+side_effects: none
+approval: none

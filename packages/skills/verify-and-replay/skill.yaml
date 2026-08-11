@@ -1,0 +1,8 @@
+name: verify-and-replay
+version: 0.1.0
+category: execution
+implementation: independent-replay
+input_artifact: PatchBundle
+output_artifact: VerificationReport
+side_effects: verifier-workspace-only
+approval: none

@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","checkpoint","lease"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"checkpoint":{"type":"object"},"lease":{"type":"object"}}}

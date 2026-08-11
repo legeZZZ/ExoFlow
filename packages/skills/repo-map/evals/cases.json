@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"stable-index","assert":["same revision gives same digest","hidden verifier files are excluded"]},{"id":"empty-repository","assert":["emit empty map with explicit warning"]}]}

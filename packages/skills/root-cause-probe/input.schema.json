@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","issue_cluster","repository_map"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"issue_cluster":{"type":"object"},"repository_map":{"type":"object"}}}

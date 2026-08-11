@@ -1,0 +1,8 @@
+name: incident-memory
+version: 0.1.0
+category: knowledge
+implementation: evidence-ledger
+input_artifact: TaskEvidence
+output_artifact: IncidentMemoryEntry
+side_effects: append-only-memory
+approval: none

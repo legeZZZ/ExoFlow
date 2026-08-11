@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"promotion-gates","assert":["include fidelity, generalization, counterexample, and secret-scan tests","proposal cannot publish itself"]},{"id":"failed-task","assert":["capture reusable failure guard","do not optimize for success-only traces"]}]}

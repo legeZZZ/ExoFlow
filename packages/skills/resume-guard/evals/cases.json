@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"fresh-lease","assert":["resume from last durable checkpoint","use a new fencing token"]},{"id":"stale-writer","assert":["reject stale state version","do not replay side effects"]}]}

@@ -1,0 +1,8 @@
+name: root-cause-probe
+version: 0.1.0
+category: diagnosis
+implementation: evidence-ranked-hypothesis
+input_artifact: RepositoryMap
+output_artifact: RootCauseHypotheses
+side_effects: none
+approval: none

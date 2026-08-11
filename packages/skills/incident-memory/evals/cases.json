@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"complete-trace","assert":["include success and failed attempts","every claim has provenance"]},{"id":"partial-trace","assert":["mark evidence gaps","never fill gaps with generated facts"]}]}

@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"relevant-runbook","assert":["return ranked evidence refs","include retrieval digest"]},{"id":"stale-runbook","assert":["mark stale documents","do not recommend destructive action"]}]}

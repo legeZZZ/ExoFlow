@@ -1,0 +1,8 @@
+name: repo-map
+version: 0.1.0
+category: diagnosis
+implementation: deterministic-indexer
+input_artifact: RepositorySnapshot
+output_artifact: RepositoryMap
+side_effects: workspace-read-only
+approval: none

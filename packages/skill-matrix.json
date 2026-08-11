@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "skills": [
+    "issue-fusion", "repo-map", "root-cause-probe", "runbook-rag",
+    "incident-memory", "skill-distiller", "risk-guard", "policy-check",
+    "judge-calibrator", "safe-patch-exec", "verify-and-replay", "resume-guard"
+  ],
+  "agents": {
+    "codeops-lead": ["issue-fusion", "repo-map", "root-cause-probe", "runbook-rag", "incident-memory", "skill-distiller", "risk-guard", "policy-check", "judge-calibrator", "safe-patch-exec", "verify-and-replay", "resume-guard"],
+    "codeops-intake": ["issue-fusion"],
+    "codeops-triage": ["risk-guard", "policy-check"],
+    "codeops-env-bootstrap": ["repo-map", "runbook-rag"],
+    "codeops-repo-analyst": ["repo-map", "root-cause-probe", "runbook-rag", "incident-memory"],
+    "codeops-plan": ["root-cause-probe", "risk-guard", "policy-check"],
+    "codeops-executor": ["risk-guard", "policy-check", "safe-patch-exec", "resume-guard"],
+    "codeops-verifier": ["policy-check", "judge-calibrator", "verify-and-replay"],
+    "codeops-postmortem": ["incident-memory", "skill-distiller", "judge-calibrator"]
+  }
+}

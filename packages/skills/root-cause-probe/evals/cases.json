@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"two-hypotheses","assert":["at least two falsifiable hypotheses","supporting and opposing evidence are cited"]},{"id":"insufficient-evidence","assert":["do not emit a single confident root cause","escalate uncertainty"]}]}

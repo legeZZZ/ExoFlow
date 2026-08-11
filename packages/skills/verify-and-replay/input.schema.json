@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","patch_bundle","verifier_workspace"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"patch_bundle":{"type":"object"},"verifier_workspace":{"type":"string"}}}

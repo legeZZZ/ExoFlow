@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","patch_digest","changed_files","workspace_ref"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"patch_digest":{"type":"string"},"changed_files":{"type":"array"},"workspace_ref":{"type":"string"},"side_effects":{"type":"array"}}}

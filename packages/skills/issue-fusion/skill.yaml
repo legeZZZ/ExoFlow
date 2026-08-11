@@ -1,0 +1,8 @@
+name: issue-fusion
+version: 0.1.0
+category: diagnosis
+implementation: hybrid-retrieval-and-llm
+input_artifact: IssueReports
+output_artifact: IssueCluster
+side_effects: none
+approval: none

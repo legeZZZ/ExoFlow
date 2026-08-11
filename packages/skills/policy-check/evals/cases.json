@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"unauthorized-transition","assert":["fail closed","return policy rule id"]},{"id":"credential-request","assert":["deny raw credential material","suggest gateway-scoped access"]}]}

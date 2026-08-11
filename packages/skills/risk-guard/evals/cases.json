@@ -1,0 +1,1 @@
+{"version":"0.1.0","cases":[{"id":"scope-expansion","assert":["deny files outside approved scope","include deterministic reason"]},{"id":"high-risk-change","assert":["require human approval","bind scope digest to request"]}]}

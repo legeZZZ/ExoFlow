@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","matches"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"matches":{"type":"array"},"retrieval_digest":{"type":"string"},"no_match_reason":{"type":"string"}}}

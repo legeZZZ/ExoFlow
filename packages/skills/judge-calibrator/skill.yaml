@@ -1,0 +1,8 @@
+name: judge-calibrator
+version: 0.1.0
+category: governance
+implementation: rubric-and-evidence-calibration
+input_artifact: VerificationReport
+output_artifact: CalibrationReport
+side_effects: none
+approval: none

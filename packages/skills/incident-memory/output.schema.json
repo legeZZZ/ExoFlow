@@ -1,0 +1,1 @@
+{"type":"object","required":["task_id","trace_id","state_version","entry_digest","provenance"],"properties":{"task_id":{"type":"string"},"trace_id":{"type":"string"},"state_version":{"type":"integer","minimum":0},"entry_digest":{"type":"string"},"provenance":{"type":"array"},"retention_class":{"type":"string"}}}

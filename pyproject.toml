@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=58"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exoflow"
+version = "0.1.0"
+description = "Multi-agent software engineering orchestration with a deterministic state machine core"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+goai-demo = "goai_control_tower.cli:main"
+goai-native-mcp = "goai_control_tower.native_mcp:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+goai_control_tower = [
+  "config/*.json",
+  "datasets/*.json",
+  "fixtures/track1/demo-service/README.md",
+  "fixtures/track1/demo-service/src/*.py",
+  "fixtures/track1/demo-service/tests/*.py",
+  "fixtures/track1/demo-service/hidden_tests/*.py",
+  "samples/track1/*.json",
+  "samples/track2/*.json"
+]
+
+[tool.goai]
+tracks = ["codeops-control-tower", "insurance-growth-attribution"]

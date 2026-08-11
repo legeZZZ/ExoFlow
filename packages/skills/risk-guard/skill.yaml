@@ -1,0 +1,8 @@
+name: risk-guard
+version: 0.1.0
+category: governance
+implementation: deterministic-policy
+input_artifact: ChangePlan
+output_artifact: RiskDecision
+side_effects: none
+approval: policy-dependent

@@ -1,0 +1,8 @@
+name: skill-distiller
+version: 0.1.0
+category: knowledge
+implementation: trace-to-skill-proposal
+input_artifact: IncidentMemoryEntry
+output_artifact: SkillCandidate
+side_effects: proposal-only
+approval: human-required
