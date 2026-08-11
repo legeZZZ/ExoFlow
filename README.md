@@ -50,21 +50,18 @@ python3 -m pip install . --no-deps --no-build-isolation
 # Run both track fixtures
 PYTHONPATH=src python3 run_demo.py
 
-# Run all tests (72 tests)
+# Run all tests
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 
-# Start the web console (http://127.0.0.1:8765)
-PYTHONPATH=src python3 run_server.py 8765
-
 # CLI entry point
-python3 -m goai_control_tower --track track1 --track1-input samples/track1/input.json
+python3 -m goai_control_tower --track track1 --track1-input src/goai_control_tower/samples/track1/input.json
 ```
 
 ## Tracks
 
 ### Track 1 — CodeOps Control Tower
 
-End-to-end code fix pipeline: issue intake → triage → env bootstrap → repo analysis →
+End-to-end code fix pipeline: intake → triage → env bootstrap → repo analysis →
 plan → approval → patch → verify → release → postmortem → skill distillation.
 
 - 9 specialist worker agents with typed SKILL manifests
@@ -92,14 +89,8 @@ ExoFlow/
 │   ├── team-leader/           ← orchestration agent
 │   ├── skills/                ← 11 specialist skills with evals
 │   └── ...
-├── tests/                     ← 72 unit tests
-├── samples/                   ← input/output contracts
+└── tests/                     ← unit tests
 ```
-
-## Documentation
-
-- [Executable Contract](EXECUTABLE_CONTRACT.md) — implementation claims and evidence minimum
-- [Executable Contract](EXECUTABLE_CONTRACT.md) — implementation claims and evidence minimum
 
 ## Requirements
 

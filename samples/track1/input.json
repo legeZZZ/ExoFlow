@@ -1,7 +1,0 @@
-{
-  "task_id": "T1-codeops-demo",
-  "source": "ci+user-feedback",
-  "symptom": "request timeout after retry",
-  "repository": "demo-service",
-  "risk": "low"
-}
