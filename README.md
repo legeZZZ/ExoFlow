@@ -6,7 +6,10 @@
 
 ExoFlow coordinates 9 specialist AI agents through a CAS-guarded state machine to triage
 incidents, locate root causes, execute verified patches, and distill operational knowledge —
-all while maintaining a cryptographically verifiable event chain.
+all while maintaining a cryptographically verifiable event chain. It ships with two
+pipelines built on the same core: **CodeOps Control Tower** (end-to-end incident-to-fix
+with mandatory human approval) and **Causal Growth Attribution** (analytics with strict
+causal-claim gating).
 
 ## Table of Contents
 
@@ -18,9 +21,9 @@ all while maintaining a cryptographically verifiable event chain.
   - [Skill Distillation](#skill-distillation)
   - [Agent Identity & Authorization](#agent-identity--authorization)
   - [Port Abstraction Layer](#port-abstraction-layer)
-- [Tracks](#tracks)
-  - [Track 1 — CodeOps Control Tower](#track-1--codeops-control-tower)
-  - [Track 2 — Causal Growth Attribution](#track-2--causal-growth-attribution)
+- [Pipelines](#pipelines)
+  - [CodeOps Control Tower](#codeops-control-tower)
+  - [Causal Growth Attribution](#causal-growth-attribution)
 - [Quick Start](#quick-start)
 - [Package Structure](#package-structure)
 - [Requirements](#requirements)
@@ -54,8 +57,8 @@ must operate within typed, verifiable boundaries.
                       │  typed events + artifacts
 ┌─────────────────────▼───────────────────────────────────────┐
 │                    State Machine                             │
-│  Track 1: 21 states, 25 transition rules                    │
-│  Track 2: 19 states, 21 transition rules                    │
+│  CodeOps pipeline: 21 states, 25 transition rules           │
+│  Causal pipeline: 19 states, 21 transition rules            │
 │  Artifact lifecycle x 9 types · actor ownership x 10 roles  │
 │  Failure breaker x threshold 3 · transition preconditions   │
 └─────────────────────┬───────────────────────────────────────┘
@@ -79,7 +82,7 @@ The state machine (`state_machine_def.py`) is the single source of truth. Every
 consumer — the local control plane, the native SQLite authority, and the Worker
 package oracle — derives from this one file. A conformance test pins them together.
 
-**Track 1 standard path (19-step code fix pipeline):**
+**CodeOps standard path (19-step incident fix pipeline):**
 
 ```
 RECEIVED → FUSED → TRIAGED → BOOTSTRAPPED → LOCATED → PLANNED
@@ -195,9 +198,9 @@ and only the verifier can emit a `VerificationReport`.
 code executor, so a patching agent can never make its own changes authoritative by
 self-reporting "pass."
 
-## Tracks
+## Pipelines
 
-### Track 1 — CodeOps Control Tower
+### CodeOps Control Tower
 
 End-to-end incident-to-fix pipeline with 21 states and mandatory human approval:
 
@@ -218,7 +221,7 @@ timeout budget defect. The first patch fixes the timeout but fails hidden
 verification (`REGRESSION_TIMEOUT_GUARD`). The second patch adds idempotent retry
 and passes.
 
-### Track 2 — Causal Growth Attribution
+### Causal Growth Attribution
 
 Insurance analytics with 3 causal readiness cases:
 
@@ -246,7 +249,7 @@ cd /path/to/exoflow
 # Install (no dependencies beyond Python stdlib)
 python3 -m pip install . --no-deps --no-build-isolation
 
-# Run both track fixture demonstrations
+# Run the fixture demo for both pipelines
 PYTHONPATH=src python3 run_demo.py
 
 # Run all tests
@@ -272,8 +275,8 @@ ExoFlow/
 │   ├── native_mcp.py            ← 12-tool MCP server, SQLite WAL authority
 │   ├── skill_distill.py         ← 3-stage trajectory distillation pipeline
 │   ├── foundation.py            ← Control plane, 15 port manifests, CI providers
-│   ├── track1.py                ← Track 1 execution: fixture + replay providers
-│   ├── track2.py                ← Track 2 execution: 3 causal cases
+│   ├── track1.py                ← CodeOps pipeline: fixture + replay providers
+│   ├── track2.py                ← Causal pipeline: 3 readiness cases
 │   ├── track2_analysis.py       ← Fixed-order log-chain decomposition
 │   ├── track2_benchmark.py      ← Process-isolated oracle benchmark
 │   ├── track2_datasets.py       ← Provenance-aware dataset catalog
@@ -298,7 +301,7 @@ ExoFlow/
 │       ├── skill-distiller/     ← Trace-to-skill distillation
 │       └── verify-and-replay/   ← Verification and deterministic replay
 ├── tests/                       ← Unit test suite
-├── run_demo.py                  ← Dual-track fixture demonstration
+├── run_demo.py                  ← Fixture demo for both pipelines
 ├── pyproject.toml
 └── LICENSE
 ```
