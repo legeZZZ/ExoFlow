@@ -3,12 +3,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from goai_control_tower.native_mcp import (
+from exoflow.native_mcp import (
     AuthorityError,
     AuthorizationError,
     SQLiteStateAuthority,
 )
-from goai_control_tower.skill_distill import (
+from exoflow.skill_distill import (
     DistillError,
     SkillPatch,
     TracePool,

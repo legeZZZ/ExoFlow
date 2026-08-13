@@ -1,4 +1,4 @@
-"""Track 1: CodeOps Control Tower vertical slice."""
+"""ExoFlow incident-fix pipeline."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from .foundation import (
 )
 
 
-TRACK1_AGENTS = [
+PIPELINE_AGENTS = [
     ("intake", "Issue intake and fusion", ["RECEIVED", "FUSED"], ["cluster issues", "deduplicate reports"], ["IssueCluster"], ["IssueFusion"]),
     ("triage", "Risk and priority triage", ["TRIAGED"], ["assess risk", "set action level"], ["RiskAssessment"], ["RiskGuard", "PolicyCheck"]),
     ("env_bootstrap", "Reproducible environment bootstrap", ["BOOTSTRAPPED"], ["prepare isolated workspace", "capture baseline"], ["EnvironmentSnapshot"], ["ResumeGuard"]),
@@ -29,7 +29,7 @@ TRACK1_AGENTS = [
 ]
 
 
-TRACK1_SKILLS = [
+PIPELINE_SKILLS = [
     ("IssueFusion", "diagnostic", "deterministic+retrieval"),
     ("RepoMap", "diagnostic", "tool"),
     ("RootCauseProbe", "diagnostic", "tool+model"),
@@ -47,11 +47,11 @@ TRACK1_SKILLS = [
 
 def build_control_plane() -> AgentTeamsControlPlane:
     control_plane = AgentTeamsControlPlane()
-    for agent_id, role, states, capabilities, can_write, can_call in TRACK1_AGENTS:
+    for agent_id, role, states, capabilities, can_write, can_call in PIPELINE_AGENTS:
         control_plane.register_agent(AgentIdentity(agent_id, role, states, capabilities, can_write, can_call))
-    for skill_id, category, executor in TRACK1_SKILLS:
+    for skill_id, category, executor in PIPELINE_SKILLS:
         control_plane.register_skill(skill_id, {"skill_id": skill_id, "version": "0.1.0", "category": category, "executor": executor, "schema_version": "1.0", "policy": {"requires_trace": True, "requires_evidence": True}})
-    control_plane.register_topology(TeamTopology("codeops-control-tower", "AgentTeamsControlPlane", list(control_plane.agents.keys()), [
+    control_plane.register_topology(TeamTopology("exoflow", "AgentTeamsControlPlane", list(control_plane.agents.keys()), [
         {"from": "intake", "to": "triage", "mode": "sequential"},
         {"from": "triage", "to": "env_bootstrap", "mode": "sequential"},
         {"from": "env_bootstrap", "to": "repo_analyst", "mode": "sequential"},
@@ -71,10 +71,10 @@ def _checkpoint(control_plane: AgentTeamsControlPlane, checkpoint: SQLiteCheckpo
 
 def run_demo(base_dir: Path, provider_id: str = "opencode", fail_first: bool = True, input_payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     control_plane = build_control_plane()
-    checkpoint = SQLiteCheckpointProvider(base_dir / "checkpoints" / "track1.sqlite3")
+    checkpoint = SQLiteCheckpointProvider(base_dir / "checkpoints" / "exoflow.sqlite3")
     evidence_provider = LocalEvidenceProvider(base_dir / "evidence")
-    package_fixture_root = Path(__file__).resolve().parent / "fixtures" / "track1" / "demo-service"
-    source_fixture_root = Path(__file__).resolve().parents[2] / "fixtures" / "track1" / "demo-service"
+    package_fixture_root = Path(__file__).resolve().parent / "fixtures" / "demo-service"
+    source_fixture_root = Path(__file__).resolve().parents[2] / "fixtures" / "demo-service"
     fixture_root = package_fixture_root if package_fixture_root.is_dir() else source_fixture_root
     provider = provider_by_id(
         provider_id,
@@ -84,7 +84,7 @@ def run_demo(base_dir: Path, provider_id: str = "opencode", fail_first: bool = T
     )
     ci_port = ci_port_for(provider, fail_first=fail_first)
     task_input = dict(input_payload or {"source": "ci+user-feedback", "symptom": "request timeout after retry", "repository": "demo-service", "risk": "low"})
-    task_id = str(task_input.pop("task_id", "T1-codeops-demo"))
+    task_id = str(task_input.pop("task_id", "T1-exoflow-demo"))
     task = control_plane.create_task(task_id, "software-engineering", task_input)
 
     def move(target: str, actor: str, reason: str, metadata: Dict[str, Any] = None) -> None:
@@ -147,7 +147,7 @@ def run_demo(base_dir: Path, provider_id: str = "opencode", fail_first: bool = T
         move("CLOSED", "postmortem", "demo closed with evidence pack")
 
     pack = control_plane.evidence_pack(task_id)
-    pack.update({"track": "track1", "provider": provider.provider_id, "agents": list(control_plane.agents.keys()), "skills": list(control_plane.skills.keys()), "port_manifests": PORT_MANIFESTS, "provider_status": "local-provider", "checkpoint": checkpoint.load(task_id), "topologies": pack["topologies"], "summary": {"final_state": control_plane.tasks[task_id].state, "attempts": len(attempts), "hidden_verification": final_verification.get("hidden"), "execution_mode": attempts[-1].get("mode"), "workspace": attempts[-1].get("workspace"), "changed_files": attempts[-1].get("changed_files", []), "issue_artifact": issue.artifact_id, "environment_artifact": env.artifact_id, "root_cause_artifact": roots.artifact_id, "plan_artifact": plan.artifact_id, "risk_artifact": risk.artifact_id}})
+    pack.update({"pipeline": "incident-fix", "provider": provider.provider_id, "agents": list(control_plane.agents.keys()), "skills": list(control_plane.skills.keys()), "port_manifests": PORT_MANIFESTS, "provider_status": "local-provider", "checkpoint": checkpoint.load(task_id), "topologies": pack["topologies"], "summary": {"final_state": control_plane.tasks[task_id].state, "attempts": len(attempts), "hidden_verification": final_verification.get("hidden"), "execution_mode": attempts[-1].get("mode"), "workspace": attempts[-1].get("workspace"), "changed_files": attempts[-1].get("changed_files", []), "issue_artifact": issue.artifact_id, "environment_artifact": env.artifact_id, "root_cause_artifact": roots.artifact_id, "plan_artifact": plan.artifact_id, "risk_artifact": risk.artifact_id}})
     pack_path = evidence_provider.write_pack(task_id, pack)
     pack["evidence_pack_path"] = str(pack_path)
     return pack
@@ -156,4 +156,4 @@ def run_demo(base_dir: Path, provider_id: str = "opencode", fail_first: bool = T
 def replay_provider(provider_id: str, base_dir: Path) -> Dict[str, Any]:
     """Run the same deterministic task through a second Provider contract."""
     result = run_demo(base_dir, provider_id=provider_id, fail_first=True)
-    return {"provider": provider_id, "task_fixture": "T1-codeops-demo-v1", "final_state": result["summary"]["final_state"], "hidden_verification": result["summary"]["hidden_verification"], "evidence_schema": "1.0", "trace_event_count": len(result["trace"])}
+    return {"provider": provider_id, "task_fixture": "T1-exoflow-demo-v1", "final_state": result["summary"]["final_state"], "hidden_verification": result["summary"]["hidden_verification"], "evidence_schema": "1.0", "trace_event_count": len(result["trace"])}

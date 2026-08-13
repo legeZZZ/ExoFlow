@@ -26,7 +26,7 @@ from .state_machine_def import (
     SIDE_EFFECT_WRITERS,
     SKILL_DISTILL_CLOSE_PRECONDITION,
     STATE_DUTY,
-    TRACK1_TRANSITIONS,
+    TRANSITIONS,
     TRANSITION_REQUIRED_ARTIFACTS,
     TRANSITION_REQUIRED_VERDICT,
 )
@@ -222,7 +222,7 @@ class SQLiteStateAuthority:
                 (task_id,),
             ).fetchall()
         owned_targets = ACTOR_TARGETS.get(actor, set())
-        legal_targets = TRACK1_TRANSITIONS.get(state, set())
+        legal_targets = TRANSITIONS.get(state, set())
         allowed = sorted(legal_targets & owned_targets)
         blocked = sorted(legal_targets - owned_targets)
         expected_outputs = sorted(
@@ -361,7 +361,7 @@ class SQLiteStateAuthority:
                 raise AuthorityError("TASK_NOT_FOUND")
             if row["state_version"] != expected_state_version:
                 raise ConflictError("STALE_STATE expected=%d found=%d" % (expected_state_version, row["state_version"]))
-            if target not in TRACK1_TRANSITIONS.get(row["state"], set()):
+            if target not in TRANSITIONS.get(row["state"], set()):
                 raise AuthorityError("INVALID_TRANSITION %s -> %s" % (row["state"], target))
             if target not in ACTOR_TARGETS.get(actor, set()):
                 raise AuthorizationError("ACTOR_CANNOT_OWN_TARGET actor=%s target=%s" % (actor, target))
@@ -643,7 +643,7 @@ class SQLiteStateAuthority:
                 errors.append("VERSION_CHAIN_BROKEN at event %s" % item["event_id"])
             if source != visited_states[-1]:
                 errors.append("STATE_CHAIN_BROKEN at event %s" % item["event_id"])
-            if target not in TRACK1_TRANSITIONS.get(source, set()):
+            if target not in TRANSITIONS.get(source, set()):
                 errors.append("INVALID_TRANSITION_RECORDED %s -> %s" % (source, target))
             if target not in ACTOR_TARGETS.get(item["actor"], set()):
                 errors.append("UNAUTHORIZED_ACTOR_RECORDED actor=%s target=%s" % (item["actor"], target))
@@ -687,7 +687,7 @@ class SQLiteStateAuthority:
 
 
 TOOLS = [
-    {"name": "task_create", "description": "Idempotently create a CodeOps task.", "inputSchema": {"type": "object", "required": ["task_id", "domain", "input_payload"], "properties": {"task_id": {"type": "string"}, "domain": {"type": "string"}, "input_payload": {"type": "object"}, "trace_id": {"type": "string"}}}},
+    {"name": "task_create", "description": "Idempotently create a task.", "inputSchema": {"type": "object", "required": ["task_id", "domain", "input_payload"], "properties": {"task_id": {"type": "string"}, "domain": {"type": "string"}, "input_payload": {"type": "object"}, "trace_id": {"type": "string"}}}},
     {"name": "task_get", "description": "Read authoritative task state.", "inputSchema": {"type": "object", "required": ["task_id"], "properties": {"task_id": {"type": "string"}}}},
     {"name": "state_transition", "description": "CAS transition a task using the authenticated Worker identity.", "inputSchema": {"type": "object", "required": ["task_id", "target", "reason", "expected_state_version"], "properties": {"task_id": {"type": "string"}, "target": {"type": "string"}, "reason": {"type": "string"}, "expected_state_version": {"type": "integer"}}}},
     {"name": "approval_request", "description": "Create a scope-bound Human approval request.", "inputSchema": {"type": "object", "required": ["task_id", "scope", "expected_state", "expected_state_version"], "properties": {"task_id": {"type": "string"}, "scope": {"type": "object"}, "expected_state": {"type": "string"}, "expected_state_version": {"type": "integer"}}}},
@@ -771,7 +771,7 @@ def dispatch_tool(authority: SQLiteStateAuthority, tool: str, arguments: Dict[st
 
 
 class MCPHandler(BaseHTTPRequestHandler):
-    server_version = "CodeOpsStateMCP/0.1"
+    server_version = "ExoFlowStateMCP/0.1"
 
     def log_message(self, format: str, *args: object) -> None:
         return
@@ -817,7 +817,7 @@ class NativeMCPServer(ThreadingHTTPServer):
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Run the CodeOps transactional MCP state authority")
+    parser = argparse.ArgumentParser(description="Run the ExoFlow transactional MCP state authority")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8780)
     parser.add_argument("--database", type=Path, default=Path("runtime_data/native/state-authority.sqlite3"))
@@ -830,7 +830,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if not identities or not all(isinstance(key, str) and isinstance(value, str) for key, value in identities.items()):
         parser.error("identity file must be a non-empty token-to-worker JSON object")
     server = NativeMCPServer((args.host, args.port), SQLiteStateAuthority(args.database), identities)
-    print("CodeOps state MCP: http://%s:%d/mcp" % (args.host, args.port), flush=True)
+    print("ExoFlow state MCP: http://%s:%d/mcp" % (args.host, args.port), flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

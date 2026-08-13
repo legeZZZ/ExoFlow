@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from goai_control_tower.foundation import AgentIdentity, AgentTeamsControlPlane, ApprovalError, ConcurrentStateError, PORT_MANIFESTS, SQLiteCheckpointProvider, StateTransitionError
+from exoflow.foundation import AgentIdentity, AgentTeamsControlPlane, ApprovalError, ConcurrentStateError, PORT_MANIFESTS, SQLiteCheckpointProvider, StateTransitionError
 
 
 class FoundationTests(unittest.TestCase):
@@ -52,9 +52,9 @@ class FoundationTests(unittest.TestCase):
         self.assertTrue(all(item["contract"] for item in PORT_MANIFESTS))
 
     def test_topology_references_registered_agents(self):
-        from goai_control_tower.track1 import build_control_plane
+        from exoflow.pipeline import build_control_plane
         control_plane = build_control_plane()
-        topology = control_plane.topologies["codeops-control-tower"]
+        topology = control_plane.topologies["exoflow"]
         self.assertEqual(topology.control_plane, "AgentTeamsControlPlane")
         self.assertTrue(any(edge["mode"] == "bounded-repair" for edge in topology.edges))
         self.assertIn("fan_out", topology.execution_semantics)

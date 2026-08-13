@@ -3,11 +3,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from goai_control_tower.foundation import WorkspaceRequiredCIPort, provider_by_id
-from goai_control_tower.track1 import replay_provider, run_demo
+from exoflow.foundation import WorkspaceRequiredCIPort, provider_by_id
+from exoflow.pipeline import replay_provider, run_demo
 
 
-class Track1Tests(unittest.TestCase):
+class PipelineTests(unittest.TestCase):
     def test_live_without_verifier_workspace_fails_closed(self):
         report = WorkspaceRequiredCIPort().run({"attempt": 1})
         self.assertEqual(report["status"], "fail")
@@ -30,7 +30,7 @@ class Track1Tests(unittest.TestCase):
             local = replay_provider("scripted-local", Path(directory) / "local")
             opencode = replay_provider("opencode", Path(directory) / "opencode")
             for replay in (local, opencode):
-                self.assertEqual(replay["task_fixture"], "T1-codeops-demo-v1")
+                self.assertEqual(replay["task_fixture"], "T1-exoflow-demo-v1")
                 self.assertEqual(replay["final_state"], "CLOSED")
                 self.assertEqual(replay["hidden_verification"], "pass")
             self.assertEqual(local["evidence_schema"], opencode["evidence_schema"])
@@ -56,8 +56,8 @@ class Track1Tests(unittest.TestCase):
             source = (workspace / "src" / "retry_guard.py").read_text(encoding="utf-8")
             self.assertIn("if idempotency_key is not None", source)
             self.assertFalse((workspace / "hidden_tests").exists())
-            persisted = json.loads((Path(directory) / "evidence" / "T1-codeops-demo.json").read_text(encoding="utf-8"))
-            self.assertEqual(persisted["evidence_pack_relative_path"], "evidence/T1-codeops-demo.json")
+            persisted = json.loads((Path(directory) / "evidence" / "T1-exoflow-demo.json").read_text(encoding="utf-8"))
+            self.assertEqual(persisted["evidence_pack_relative_path"], "evidence/T1-exoflow-demo.json")
             self.assertEqual(persisted["input_payload"]["symptom"], "request timeout after retry")
 
     def test_fixture_provider_rejects_unapproved_file_scope(self):
@@ -66,7 +66,7 @@ class Track1Tests(unittest.TestCase):
             provider = provider_by_id(
                 "fixture-local",
                 workspace_root=root / "workspaces",
-                fixture_root=Path(__file__).parents[1] / "fixtures" / "track1" / "demo-service",
+                fixture_root=Path(__file__).parents[1] / "fixtures" / "demo-service",
             )
             with self.assertRaises(ValueError):
                 provider.execute({"attempt": 1, "workspace_id": "scope-test", "approved_scope": ["tests/test_public.py"]})

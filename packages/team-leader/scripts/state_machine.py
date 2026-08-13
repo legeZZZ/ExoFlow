@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-# Embedded copy of src/goai_control_tower/state_machine_def.py (Track 1).
+# Embedded copy of src/exoflow/state_machine_def.py.
 # This file ships inside the Worker ZIP and cannot import the package, so
 # tests/test_state_machine_conformance.py pins this table to the shared
 # single source of truth. Any change must be made there first.

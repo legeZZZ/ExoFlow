@@ -1,4 +1,4 @@
-"""Single source of truth for the CodeOps task state machine.
+"""Single source of truth for the ExoFlow task state machine.
 
 Every consumer — the local conformance control plane (foundation.py), the
 native SQLite state authority (native_mcp.py) and the dependency-free Worker
@@ -7,13 +7,13 @@ from these definitions. The Worker package cannot import this module, so a
 conformance test (tests/test_state_machine_conformance.py) pins the embedded
 copy to this file.
 
-Track 1 standard path:
+Standard path:
 
     RECEIVED -> FUSED -> TRIAGED -> BOOTSTRAPPED -> LOCATED -> PLANNED
       -> AWAITING_APPROVAL -> PATCHED -> VERIFYING -> RELEASE_READY
       -> POSTMORTEM -> SKILL_DISTILLING -> CLOSED
 
-Track 1 read-only analysis branch (no PatchBundle is ever produced):
+Read-only analysis branch (no PatchBundle is ever produced):
 
     LOCATED -> READONLY_VERIFYING -> READONLY_VERIFIED -> EVIDENCE_PACKED -> CLOSED
 """
@@ -23,9 +23,9 @@ from __future__ import annotations
 from typing import Dict, List, Set, Tuple
 
 
-# --- Track 1: software engineering task states -------------------------------
+# --- Software engineering task states -----------------------------------------
 
-TRACK1_TRANSITIONS: Dict[str, Set[str]] = {
+TRANSITIONS: Dict[str, Set[str]] = {
     "RECEIVED": {"FUSED", "RECOVERING"},
     "FUSED": {"TRIAGED", "RECOVERING"},
     "TRIAGED": {"BOOTSTRAPPED", "NEEDS_HUMAN", "RECOVERING"},
@@ -49,43 +49,6 @@ TRACK1_TRANSITIONS: Dict[str, Set[str]] = {
     "BLOCKED_BY_POLICY": {"NEEDS_HUMAN", "CLOSED", "RECOVERING"},
     "CLOSED": set(),
 }
-
-# --- Track 2: insurance analytics task states --------------------------------
-
-TRACK2_TRANSITIONS: Dict[str, Set[str]] = {
-    "RECEIVED": {"INTENT_PARSED", "RECOVERING"},
-    "INTENT_PARSED": {"METRIC_CONFIRMED", "NEEDS_CLARIFICATION", "RECOVERING"},
-    "METRIC_CONFIRMED": {"DATA_VALIDATED", "NEEDS_CLARIFICATION", "RECOVERING"},
-    "DATA_VALIDATED": {"DIAGNOSING", "DATA_INSUFFICIENT", "RETRYABLE_QUERY_FAILURE", "RECOVERING"},
-    "DIAGNOSING": {"EVIDENCE_GRADED", "DATA_INSUFFICIENT", "RECOVERING"},
-    "EVIDENCE_GRADED": {"ACTION_DRAFTED", "DESCRIPTIVE_ONLY", "RECOVERING"},
-    "DESCRIPTIVE_ONLY": {"ACTION_DRAFTED", "CLOSED", "RECOVERING"},
-    "ACTION_DRAFTED": {"COMPLIANCE_REVIEWED", "BLOCKED_BY_GUARDRAIL", "RECOVERING"},
-    "COMPLIANCE_REVIEWED": {"AWAITING_APPROVAL", "BLOCKED_BY_GUARDRAIL", "RECOVERING"},
-    "AWAITING_APPROVAL": {"ACTION_DRAFTED", "MONITORING", "NEEDS_HUMAN", "BLOCKED_BY_GUARDRAIL", "RECOVERING"},
-    "MONITORING": {"REVIEWED", "MONITORING_ALERT", "RECOVERING"},
-    "MONITORING_ALERT": {"MONITORING", "REVIEWED", "NEEDS_HUMAN", "RECOVERING"},
-    "REVIEWED": {"CLOSED", "RECOVERING"},
-    "NEEDS_CLARIFICATION": {"METRIC_CONFIRMED", "CLOSED", "RECOVERING"},
-    "DATA_INSUFFICIENT": {"DESCRIPTIVE_ONLY", "NEEDS_HUMAN", "CLOSED", "RECOVERING"},
-    "RETRYABLE_QUERY_FAILURE": {"DATA_VALIDATED", "NEEDS_HUMAN", "CLOSED", "RECOVERING"},
-    "BLOCKED_BY_GUARDRAIL": {"NEEDS_HUMAN", "CLOSED", "RECOVERING"},
-    "NEEDS_HUMAN": {"DATA_VALIDATED", "ACTION_DRAFTED", "CLOSED", "RECOVERING"},
-    "RECOVERING": {"DATA_VALIDATED", "DIAGNOSING", "CLOSED", "NEEDS_HUMAN"},
-    "CLOSED": set(),
-}
-
-
-def merge_transitions(*tables: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
-    """Union per-state transition targets; shared states accumulate targets."""
-    merged: Dict[str, Set[str]] = {}
-    for table in tables:
-        for state, targets in table.items():
-            merged.setdefault(state, set()).update(targets)
-    return merged
-
-
-TRANSITIONS: Dict[str, Set[str]] = merge_transitions(TRACK1_TRANSITIONS, TRACK2_TRANSITIONS)
 
 # --- Actor ownership ----------------------------------------------------------
 
@@ -180,7 +143,7 @@ BREAKER_GUARDED_TARGETS: Tuple[str, ...] = ("VERIFYING", "READONLY_VERIFYING")
 SIDE_EFFECT_WRITERS: Tuple[str, ...] = ("codeops-executor", "codeops-lead")
 SIDE_EFFECT_STATUSES: Tuple[str, ...] = ("INTENT", "EXECUTED", "FAILED", "ROLLED_BACK")
 
-# Short duty text per Track 1 state, surfaced by state_describe so that a Worker
+# Short duty text per state, surfaced by state_describe so that a Worker
 # (or a fresh recovery session) can read its workstation contract directly
 # instead of inferring it from the full chain history.
 STATE_DUTY: Dict[str, str] = {

@@ -2,8 +2,7 @@
   "version": "0.1.0",
   "runtime": {
     "output_dir": "runtime_data",
-    "track1_provider": "fixture-local",
-    "track2_cases": ["A", "B", "C"]
+    "provider": "fixture-local"
   },
   "server": {
     "host": "127.0.0.1",

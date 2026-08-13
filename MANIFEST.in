@@ -1,4 +1,2 @@
-include EXECUTABLE_CONTRACT.md
 include README.md
-recursive-include deploy/agentteams *.yaml *.json *.md *.py *.sh
 recursive-include packages *.json *.md

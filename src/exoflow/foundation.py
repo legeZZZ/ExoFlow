@@ -129,7 +129,7 @@ class ApprovalError(RuntimeError):
 class AgentTeamsControlPlane:
     """Authoritative task state, team identities, events, artifacts and approvals."""
 
-    # Single source of truth: state_machine_def.py (merged Track 1 + Track 2).
+    # Single source of truth: state_machine_def.py.
     TRANSITIONS: Dict[str, Set[str]] = _SHARED_TRANSITIONS
 
     def __init__(self) -> None:
@@ -438,7 +438,7 @@ class ScriptedCodeExecutionProvider(CodeExecutionProvider):
 
 
 class FixtureCodeExecutionProvider(CodeExecutionProvider):
-    """Execute the Track 1 fixture in an isolated local workspace.
+    """Execute the demo-service fixture in an isolated local workspace.
 
     This provider is deterministic, but it performs real file changes and
     subprocess test runs. It is the bridge between the local conformance
@@ -452,7 +452,7 @@ class FixtureCodeExecutionProvider(CodeExecutionProvider):
         self.fixture_root = fixture_root
 
     def _workspace(self, task: Dict[str, Any]) -> Path:
-        workspace_id = str(task.get("workspace_id", "track1-codeops-demo"))
+        workspace_id = str(task.get("workspace_id", "exoflow-demo"))
         if Path(workspace_id).name != workspace_id or workspace_id in {"", ".", ".."}:
             raise ValueError("workspace_id must be a single safe path component")
         return self.workspace_root / workspace_id
@@ -531,14 +531,14 @@ class OpencodeCodeExecutionProvider(CodeExecutionProvider):
     """Adapter boundary for the installed opencode CLI.
 
     Default mode is deterministic dry-run so tests do not require a network or
-    model credential. GOAI_OPENCODE_LIVE=1 enables a future live invocation.
+    model credential. EXOFLOW_OPENCODE_LIVE=1 enables a future live invocation.
     """
 
     provider_id = "opencode"
 
     def __init__(self, executable: Optional[str] = None, live: bool = False) -> None:
         self.executable = executable or shutil.which("opencode") or "opencode"
-        self.live = live or os.getenv("GOAI_OPENCODE_LIVE") == "1"
+        self.live = live or os.getenv("EXOFLOW_OPENCODE_LIVE") == "1"
 
     def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
         attempt = int(task.get("attempt", 1))

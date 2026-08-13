@@ -10,8 +10,8 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-from goai_control_tower import state_machine_def
-from goai_control_tower.foundation import AgentTeamsControlPlane
+from exoflow import state_machine_def
+from exoflow.foundation import AgentTeamsControlPlane
 
 
 ROOT = Path(__file__).parents[1]
@@ -30,9 +30,9 @@ def as_plain_sets(table):
 
 
 class StateMachineConformanceTests(unittest.TestCase):
-    def test_worker_package_matches_shared_track1_definition(self):
+    def test_worker_package_matches_shared_definition(self):
         machine = load_worker_state_machine()
-        self.assertEqual(as_plain_sets(machine.TRANSITIONS), as_plain_sets(state_machine_def.TRACK1_TRANSITIONS))
+        self.assertEqual(as_plain_sets(machine.TRANSITIONS), as_plain_sets(state_machine_def.TRANSITIONS))
         self.assertEqual(as_plain_sets(machine.ACTOR_TARGETS), as_plain_sets(state_machine_def.ACTOR_TARGETS))
 
     def test_foundation_control_plane_uses_shared_definition(self):
@@ -42,10 +42,10 @@ class StateMachineConformanceTests(unittest.TestCase):
         )
 
     def test_readonly_branch_is_wired(self):
-        self.assertIn("READONLY_VERIFYING", state_machine_def.TRACK1_TRANSITIONS["LOCATED"])
-        self.assertEqual(state_machine_def.TRACK1_TRANSITIONS["READONLY_VERIFYING"], {"READONLY_VERIFIED", "NEEDS_HUMAN", "RECOVERING"})
-        self.assertEqual(state_machine_def.TRACK1_TRANSITIONS["READONLY_VERIFIED"], {"EVIDENCE_PACKED", "NEEDS_HUMAN", "RECOVERING"})
-        self.assertEqual(state_machine_def.TRACK1_TRANSITIONS["EVIDENCE_PACKED"], {"CLOSED"})
+        self.assertIn("READONLY_VERIFYING", state_machine_def.TRANSITIONS["LOCATED"])
+        self.assertEqual(state_machine_def.TRANSITIONS["READONLY_VERIFYING"], {"READONLY_VERIFIED", "NEEDS_HUMAN", "RECOVERING"})
+        self.assertEqual(state_machine_def.TRANSITIONS["READONLY_VERIFIED"], {"EVIDENCE_PACKED", "NEEDS_HUMAN", "RECOVERING"})
+        self.assertEqual(state_machine_def.TRANSITIONS["EVIDENCE_PACKED"], {"CLOSED"})
 
     def test_leader_cannot_own_domain_stage_states(self):
         lead_targets = state_machine_def.ACTOR_TARGETS["codeops-lead"]

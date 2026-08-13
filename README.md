@@ -223,6 +223,12 @@ python3 -m pip install . --no-deps --no-build-isolation
 # Run the fixture demonstration
 PYTHONPATH=src python3 run_demo.py
 
+# Run the pipeline via the CLI
+PYTHONPATH=src python3 -m exoflow --input src/exoflow/samples/input.json
+
+# Start the Native MCP state authority (streamable HTTP, port 8780)
+PYTHONPATH=src python3 -m exoflow.native_mcp --identity-file path/to/identities.json
+
 # Run all tests
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
@@ -231,13 +237,15 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ```text
 ExoFlow/
-├── src/
+├── src/exoflow/
 │   ├── state_machine_def.py     ← 21 states, 9 artifact types, actor ownership
 │   ├── native_mcp.py            ← 12-tool MCP server, SQLite WAL authority
 │   ├── skill_distill.py         ← 3-stage trajectory distillation pipeline
 │   ├── foundation.py            ← Control plane, 15 port manifests, CI providers
+│   ├── pipeline.py              ← Incident-fix pipeline: fixture + replay providers
 │   ├── configuration.py         ← JSON config loader
 │   ├── cli.py                   ← CLI entry point
+│   ├── fixtures/demo-service/   ← Runnable demo repository with hidden tests
 │   └── samples/                 ← Input/output contract fixtures
 ├── packages/                    ← 9 Worker SKILL.md manifests + team-leader orchestrator
 │   ├── team-leader/             ← State machine oracle for Workers (conformance-tested)

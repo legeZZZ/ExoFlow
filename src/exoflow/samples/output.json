@@ -1,6 +1,6 @@
 {
-  "track": "track1",
-  "fixture": "T1-codeops-demo-v1",
+  "pipeline": "incident-fix",
+  "fixture": "T1-exoflow-demo-v1",
   "expected_summary": {
     "final_state": "CLOSED",
     "attempts": 2,

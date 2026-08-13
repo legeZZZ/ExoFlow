@@ -11,7 +11,7 @@ from typing import Any, Dict, Optional
 def load_config(path: Optional[Path] = None) -> Dict[str, Any]:
     if path is not None:
         return json.loads(path.read_text(encoding="utf-8"))
-    resource = files("goai_control_tower").joinpath("config/default.json")
+    resource = files("exoflow").joinpath("config/default.json")
     return json.loads(resource.read_text(encoding="utf-8"))
 
 
@@ -27,6 +27,6 @@ def validate_evidence_pack(pack: Dict[str, Any], config: Dict[str, Any]) -> None
         raise RuntimeError("evidence contract failed: artifacts are empty")
     if policy.get("require_digests") and any(not item.get("content_digest") for item in pack.get("evidence", [])):
         raise RuntimeError("evidence contract failed: an evidence digest is missing")
-    if policy.get("require_hidden_verifier") and pack.get("track") == "track1":
-        if pack.get("summary", {}).get("hidden_verification") != "pass":
+    if policy.get("require_hidden_verifier") and pack.get("summary", {}).get("hidden_verification") is not None:
+        if pack["summary"]["hidden_verification"] != "pass":
             raise RuntimeError("evidence contract failed: hidden verification did not pass")

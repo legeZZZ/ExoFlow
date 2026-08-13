@@ -213,6 +213,12 @@ python3 -m pip install . --no-deps --no-build-isolation
 # 运行夹具演示
 PYTHONPATH=src python3 run_demo.py
 
+# 通过 CLI 运行流水线
+PYTHONPATH=src python3 -m exoflow --input src/exoflow/samples/input.json
+
+# 启动 Native MCP 状态权威服务（streamable HTTP，端口 8780）
+PYTHONPATH=src python3 -m exoflow.native_mcp --identity-file path/to/identities.json
+
 # 运行全部测试
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
@@ -221,13 +227,15 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ```text
 ExoFlow/
-├── src/
+├── src/exoflow/
 │   ├── state_machine_def.py     ← 21 状态、9 种产出物、角色所有权
 │   ├── native_mcp.py            ← 12 工具 MCP 服务、SQLite WAL 权威
 │   ├── skill_distill.py         ← 3 阶段轨迹蒸馏流水线
 │   ├── foundation.py            ← 控制平面、15 端口清单、CI Provider
+│   ├── pipeline.py              ← 事故修复流水线：夹具 + 回放 Provider
 │   ├── configuration.py         ← JSON 配置加载
 │   ├── cli.py                   ← CLI 入口
+│   ├── fixtures/demo-service/   ← 可运行的演示仓库（含隐藏测试）
 │   └── samples/                 ← 输入输出契约夹具
 ├── packages/                    ← 9 个 Worker SKILL.md 清单 + team-leader 编排
 │   ├── team-leader/             ← Worker 状态机预言机（一致性测试钉死）

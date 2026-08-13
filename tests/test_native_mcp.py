@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from goai_control_tower.native_mcp import AuthorityError, AuthorizationError, ConflictError, SQLiteStateAuthority, handle_mcp_jsonrpc
+from exoflow.native_mcp import AuthorityError, AuthorizationError, ConflictError, SQLiteStateAuthority, handle_mcp_jsonrpc
 
 
 class NativeMCPTests(unittest.TestCase):

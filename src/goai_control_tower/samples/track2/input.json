@@ -1,6 +1,0 @@
-{
-  "track": "track2",
-  "question": "DAU rose while premium declined; explain what is known and what should be tested.",
-  "cases": ["A", "B", "C"],
-  "metric_contract": "insurance-growth-v1"
-}

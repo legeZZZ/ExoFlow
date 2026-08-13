@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from goai_control_tower.native_mcp import (
+from exoflow.native_mcp import (
     AuthorityError,
     AuthorizationError,
     ConflictError,
