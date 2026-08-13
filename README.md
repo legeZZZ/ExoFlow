@@ -6,10 +6,7 @@
 
 ExoFlow coordinates 9 specialist AI agents through a CAS-guarded state machine to triage
 incidents, locate root causes, execute verified patches, and distill operational knowledge —
-all while maintaining a cryptographically verifiable event chain. It ships with two
-pipelines built on the same core: **CodeOps Control Tower** (end-to-end incident-to-fix
-with mandatory human approval) and **Causal Growth Attribution** (analytics with strict
-causal-claim gating).
+all while maintaining a cryptographically verifiable event chain.
 
 ## Table of Contents
 
@@ -21,9 +18,7 @@ causal-claim gating).
   - [Skill Distillation](#skill-distillation)
   - [Agent Identity & Authorization](#agent-identity--authorization)
   - [Port Abstraction Layer](#port-abstraction-layer)
-- [Pipelines](#pipelines)
-  - [CodeOps Control Tower](#codeops-control-tower)
-  - [Causal Growth Attribution](#causal-growth-attribution)
+- [The Pipeline](#the-pipeline)
 - [Quick Start](#quick-start)
 - [Package Structure](#package-structure)
 - [Requirements](#requirements)
@@ -42,7 +37,6 @@ must operate within typed, verifiable boundaries.
 | **Auditability** | SQLite WAL event store records every transition, artifact, and approval |
 | **Failure isolation** | Circuit breaker on repeated failure signatures → forced human escalation |
 | **Knowledge retention** | 3-stage skill distillation pipeline from closed task trajectories |
-| **Causal safety** | Causal gates prevent claims when data is observational or insufficient |
 | **Zero dependencies** | Pure Python stdlib; installable offline with no network |
 | **Vendor-neutral ports** | 15 abstract ports with swappable local/cloud providers |
 
@@ -57,8 +51,7 @@ must operate within typed, verifiable boundaries.
                       │  typed events + artifacts
 ┌─────────────────────▼───────────────────────────────────────┐
 │                    State Machine                             │
-│  CodeOps pipeline: 21 states, 25 transition rules           │
-│  Causal pipeline: 19 states, 21 transition rules            │
+│  21 states · 25 transition rules                            │
 │  Artifact lifecycle x 9 types · actor ownership x 10 roles  │
 │  Failure breaker x threshold 3 · transition preconditions   │
 └─────────────────────┬───────────────────────────────────────┘
@@ -82,7 +75,7 @@ The state machine (`state_machine_def.py`) is the single source of truth. Every
 consumer — the local control plane, the native SQLite authority, and the Worker
 package oracle — derives from this one file. A conformance test pins them together.
 
-**CodeOps standard path (19-step incident fix pipeline):**
+**Standard path (19-step incident fix pipeline):**
 
 ```
 RECEIVED → FUSED → TRIAGED → BOOTSTRAPPED → LOCATED → PLANNED
@@ -102,7 +95,7 @@ Key guardrails:
   `verdict=PASS` written at the current state version.
 - **Artifact state gates** — a `VerificationReport` can only be published during
   `VERIFYING` or `READONLY_VERIFYING`; writing it from any other state is rejected.
-- **Failure signature circuit breaker** — 3 VerificatioReports with the same
+- **Failure signature circuit breaker** — 3 VerificationReports with the same
   `failure_signature` blocks re-entry to verification states, forcing `NEEDS_HUMAN`.
 - **Recovery** — crash-recovery paths via `RECOVERING` state, preserving version
   so the agent resumes from the exact breakpoint.
@@ -198,9 +191,7 @@ and only the verifier can emit a `VerificationReport`.
 code executor, so a patching agent can never make its own changes authoritative by
 self-reporting "pass."
 
-## Pipelines
-
-### CodeOps Control Tower
+## The Pipeline
 
 End-to-end incident-to-fix pipeline with 21 states and mandatory human approval:
 
@@ -221,26 +212,6 @@ timeout budget defect. The first patch fixes the timeout but fails hidden
 verification (`REGRESSION_TIMEOUT_GUARD`). The second patch adds idempotent retry
 and passes.
 
-### Causal Growth Attribution
-
-Insurance analytics with 3 causal readiness cases:
-
-| Case | Data Type | Outcome | Behavior |
-|---|---|---|---|
-| **A** | Observational | `DESCRIPTIVE_ONLY` | Shows co-movement, decomposition, pre-experiment draft; **no causal verbs** |
-| **B** | Missing metadata | `DATA_INSUFFICIENT` | Fails closed, enumerates missing fields and remediation path |
-| **C** | Randomized experiment | `CAUSAL_READY` | ITT estimate with 95% CI, guardrails, monitoring plan |
-
-Process-isolated oracle benchmark measures causal-gate accuracy, false causal
-assertion rate, refusal recall, effect error, and 95% CI coverage — without
-exposing seeds, potential outcomes, or the oracle to the agent under test.
-
-**Important**: This is a safety and reproducibility benchmark for the causal
-simulator, not evidence of real-world insurance business uplift. The UCI Bank
-Marketing dataset adapter (`track2_real_data.py`) pins SHA-256
-`94a5cb4b7d461dab12f7f6123723054911fbdd28d84a2c4ec92378af019be686` and
-fails closed on causal claims because the data has no randomized treatment.
-
 ## Quick Start
 
 ```bash
@@ -249,39 +220,22 @@ cd /path/to/exoflow
 # Install (no dependencies beyond Python stdlib)
 python3 -m pip install . --no-deps --no-build-isolation
 
-# Run the fixture demo for both pipelines
+# Run the fixture demonstration
 PYTHONPATH=src python3 run_demo.py
 
 # Run all tests
 PYTHONPATH=src python3 -m unittest discover -s tests -v
-
-# CLI entry points
-python3 -m goai_control_tower --track track1 \
-  --track1-input src/goai_control_tower/samples/track1/input.json
-
-python3 -m goai_control_tower --track track2 --track2-benchmark --track2-benchmark-seeds 3
-
-# Start the Native MCP state authority (streamable HTTP, port 8780)
-CODEOPS_STATE_DATABASE=runtime_data/state.sqlite3 \
-  python3 -m goai_control_tower.native_mcp --identity-file path/to/identities.json
 ```
 
 ## Package Structure
 
 ```text
 ExoFlow/
-├── src/goai_control_tower/
-│   ├── state_machine_def.py     ← 30+ states, 9 artifact types, actor ownership
+├── src/
+│   ├── state_machine_def.py     ← 21 states, 9 artifact types, actor ownership
 │   ├── native_mcp.py            ← 12-tool MCP server, SQLite WAL authority
 │   ├── skill_distill.py         ← 3-stage trajectory distillation pipeline
 │   ├── foundation.py            ← Control plane, 15 port manifests, CI providers
-│   ├── track1.py                ← CodeOps pipeline: fixture + replay providers
-│   ├── track2.py                ← Causal pipeline: 3 readiness cases
-│   ├── track2_analysis.py       ← Fixed-order log-chain decomposition
-│   ├── track2_benchmark.py      ← Process-isolated oracle benchmark
-│   ├── track2_datasets.py       ← Provenance-aware dataset catalog
-│   ├── track2_real_data.py      ← UCI Bank Marketing adapter (SHA-256 pinned)
-│   ├── track2_worker.py         ← Worker-side causal computation
 │   ├── configuration.py         ← JSON config loader
 │   ├── cli.py                   ← CLI entry point
 │   └── samples/                 ← Input/output contract fixtures
@@ -301,7 +255,7 @@ ExoFlow/
 │       ├── skill-distiller/     ← Trace-to-skill distillation
 │       └── verify-and-replay/   ← Verification and deterministic replay
 ├── tests/                       ← Unit test suite
-├── run_demo.py                  ← Fixture demo for both pipelines
+├── run_demo.py                  ← Fixture demonstration
 ├── pyproject.toml
 └── LICENSE
 ```

@@ -5,9 +5,7 @@
 **基于确定性、类型化、可审计状态机的多智能体软件工程编排框架。**
 
 ExoFlow 通过 CAS 门禁保护的状态机协调 9 个专业 AI Agent，完成事故分诊、根因定位、
-验证补丁执行和运维知识蒸馏，全程维护可密码学验证的事件链。框架内置两条基于同一
-核心构建的流水线：**CodeOps 控制塔**（端到端事故修复，强制人工审批）和
-**因果增长归因**（带严格因果断言门禁的分析流水线）。
+验证补丁执行和运维知识蒸馏，全程维护可密码学验证的事件链。
 
 ## 目录
 
@@ -20,8 +18,6 @@ ExoFlow 通过 CAS 门禁保护的状态机协调 9 个专业 AI Agent，完成�
   - [Agent 身份与授权](#agent-身份与授权)
   - [端口抽象层](#端口抽象层)
 - [流水线](#流水线)
-  - [CodeOps 控制塔](#codeops-控制塔)
-  - [因果增长归因](#因果增长归因)
 - [快速开始](#快速开始)
 - [项目结构](#项目结构)
 - [运行要求](#运行要求)
@@ -39,7 +35,6 @@ ExoFlow 通过 CAS 门禁保护的状态机协调 9 个专业 AI Agent，完成�
 | **可审计性** | SQLite WAL 事件存储记录每次迁移、产出物和审批 |
 | **故障隔离** | 相同失败签名重复 3 次后熔断，强制升级人工处理 |
 | **知识留存** | 从已关闭任务轨迹中执行 3 阶段技能蒸馏流水线 |
-| **因果安全** | 数据为观测性或不足时，因果门禁阻止断言输出 |
 | **零依赖** | 纯 Python 标准库；支持离线安装，无需网络 |
 | **供应商中立** | 15 个抽象端口，本地/云端 Provider 可替换 |
 
@@ -54,8 +49,7 @@ ExoFlow 通过 CAS 门禁保护的状态机协调 9 个专业 AI Agent，完成�
                       │  类型化事件 + 产出物
 ┌─────────────────────▼───────────────────────────────────────┐
 │                    状态机                                     │
-│  CodeOps 流水线：21 状态、25 迁移规则                        │
-│  因果归因流水线：19 状态、21 迁移规则                          │
+│  21 状态 · 25 迁移规则                                       │
 │  产出物生命周期 × 9 种 · 角色所有权 × 10 个                   │
 │  失败熔断 × 阈值 3 · 迁移前置条件                             │
 └─────────────────────┬───────────────────────────────────────┘
@@ -78,7 +72,7 @@ ExoFlow 通过 CAS 门禁保护的状态机协调 9 个专业 AI Agent，完成�
 状态机（`state_machine_def.py`）是唯一事实源。所有消费者——本地控制平面、Native
 SQLite 权威服务、Worker 包预言机——都从此文件派生。一致性测试将三者钉在一起。
 
-**CodeOps 标准路径（19 步事故修复流水线）：**
+**标准路径（19 步事故修复流水线）：**
 
 ```
 RECEIVED → FUSED → TRIAGED → BOOTSTRAPPED → LOCATED → PLANNED
@@ -190,8 +184,6 @@ HTTP（端口 8780）暴露 **12 个 MCP 工具**。
 
 ## 流水线
 
-### CodeOps 控制塔
-
 端到端事故修复流水线，21 个状态，强制人工审批：
 
 1. **录入** — 多源聚合去重，产出 `IssueCluster`
@@ -210,24 +202,6 @@ HTTP（端口 8780）暴露 **12 个 MCP 工具**。
 第一轮补丁修复了超时但未通过隐藏验证（`REGRESSION_TIMEOUT_GUARD`）；第二轮补丁
 添加了幂等重试并通过。
 
-### 因果增长归因
-
-保险业务分析，3 种因果就绪场景：
-
-| 场景 | 数据类型 | 结果 | 行为 |
-|---|---|---|---|
-| **A** | 观测性数据 | `DESCRIPTIVE_ONLY` | 展示共变关系与分解，禁止因果动词 |
-| **B** | 缺失实验元数据 | `DATA_INSUFFICIENT` | 拒绝闭合，列举缺失字段与补数路径 |
-| **C** | 随机化实验 | `CAUSAL_READY` | ITT 估计 + 95% CI + 护栏 + 监控方案 |
-
-进程隔离的预言机基准测试衡量因果门禁准确率、错误因果断言率、拒绝召回率、效应
-误差和 95% CI 覆盖率——种子、潜在结果和预言机不暴露给被测 Agent。
-
-**注意**：这是因果模拟器的安全性与可复现性基准测试，并非真实保险业务提升的证据。
-UCI Bank Marketing 数据集适配器（`track2_real_data.py`）锁定 SHA-256
-`94a5cb4b7d461dab12f7f6123723054911fbdd28d84a2c4ec92378af019be686`，因数据无
-随机化处理分配，对因果声明执行拒绝闭合。
-
 ## 快速开始
 
 ```bash
@@ -236,39 +210,22 @@ cd /path/to/exoflow
 # 安装（Python 标准库外无依赖）
 python3 -m pip install . --no-deps --no-build-isolation
 
-# 运行两条流水线的夹具演示
+# 运行夹具演示
 PYTHONPATH=src python3 run_demo.py
 
 # 运行全部测试
 PYTHONPATH=src python3 -m unittest discover -s tests -v
-
-# CLI 入口
-python3 -m goai_control_tower --track track1 \
-  --track1-input src/goai_control_tower/samples/track1/input.json
-
-python3 -m goai_control_tower --track track2 --track2-benchmark --track2-benchmark-seeds 3
-
-# 启动 Native MCP 状态权威服务（streamable HTTP，端口 8780）
-CODEOPS_STATE_DATABASE=runtime_data/state.sqlite3 \
-  python3 -m goai_control_tower.native_mcp --identity-file path/to/identities.json
 ```
 
 ## 项目结构
 
 ```text
 ExoFlow/
-├── src/goai_control_tower/
-│   ├── state_machine_def.py     ← 30+ 状态、9 种产出物、角色所有权
+├── src/
+│   ├── state_machine_def.py     ← 21 状态、9 种产出物、角色所有权
 │   ├── native_mcp.py            ← 12 工具 MCP 服务、SQLite WAL 权威
 │   ├── skill_distill.py         ← 3 阶段轨迹蒸馏流水线
 │   ├── foundation.py            ← 控制平面、15 端口清单、CI Provider
-│   ├── track1.py                ← CodeOps 流水线：夹具 + 回放 Provider
-│   ├── track2.py                ← 因果归因流水线：3 种因果场景
-│   ├── track2_analysis.py       ← 固定序对数链分解
-│   ├── track2_benchmark.py      ← 进程隔离预言机基准
-│   ├── track2_datasets.py       ← 来源感知数据集目录
-│   ├── track2_real_data.py      ← UCI Bank Marketing 适配器（SHA-256 锁定）
-│   ├── track2_worker.py         ← Worker 侧因果计算
 │   ├── configuration.py         ← JSON 配置加载
 │   ├── cli.py                   ← CLI 入口
 │   └── samples/                 ← 输入输出契约夹具
@@ -288,7 +245,7 @@ ExoFlow/
 │       ├── skill-distiller/     ← 轨迹到技能蒸馏
 │       └── verify-and-replay/   ← 验证与确定性回放
 ├── tests/                       ← 单元测试套件
-├── run_demo.py                  ← 双流水线夹具演示
+├── run_demo.py                  ← 夹具演示
 ├── pyproject.toml
 └── LICENSE
 ```
